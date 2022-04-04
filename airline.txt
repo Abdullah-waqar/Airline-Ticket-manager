@@ -1,0 +1,92 @@
+// SPDX-License-Identifier: GPL-3.0
+
+pragma solidity >=0.7.0 <0.9.0;
+
+contract AirlineTicketManager {
+
+    struct StoringUserData {
+        string name;
+        string destination;
+        uint256 passportID;
+        uint64 seatClassPrice;
+
+    }
+    // Creater of the contract who receives ether.
+    address public owner;
+
+    // Prices of all the seat classes
+    uint64 economyClassPrice = 0.005 ether;
+    uint64 businessClassPrice = 0.007 ether;
+    uint64 firstClassPrice = 0.01 ether;
+    address public ownerD;
+
+    // using mapping to get and store data
+    mapping(uint256 => StoringUserData) public data;
+
+    uint64 price;
+
+    // Function which takes input of name , destination , passportID and _seatClass 
+    // and stores it in the struct called StoringUserData.
+
+    function userData(string memory _name , string memory _destination , uint256 _passportID ,uint64 _seatClass ) public {
+
+           data[0] = StoringUserData(_name , _destination , _passportID , _seatClass); 
+
+    }
+
+    
+    // Functions to receive ether on every successfull ticket booking
+    StoringUserData s;
+    
+    // This onlyOwner modifier is used to check wheather the sender is owner or not
+    modifier onlyOwner {
+        require(msg.sender == owner);
+        _;
+    }
+
+    function bookTicket() public onlyOwner
+    {
+       
+       owner = msg.sender;
+       price = s.seatClassPrice;
+
+    }
+
+    mapping(address => uint) _balance;
+
+    
+    fallback() payable onlyOwner external {
+        _balance[msg.sender] += msg.value;
+    }
+
+    // State varibale of parent contract
+    ChildContract private child;
+    constructor ()
+    {
+        // child contract which is called from parent(AirlineTicketManager) contract. 
+        child = new ChildContract();
+
+    }
+   
+    // Fucntion to add address
+    function add() public onlyOwner {
+    
+        owner = msg.sender;
+
+    }
+    
+    // Function to remove address
+    function remove() public onlyOwner {
+        owner = ownerD;
+    }
+
+  
+
+}
+
+// Child contract which will be deploy throgh parent contract(AirLineTicketManager).
+contract ChildContract{
+
+
+
+}
